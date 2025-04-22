@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
       SettingsScreen(),
     ];
 
-    return MaterialApp(
+    return MaterialApp(debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: screens[currentIndex],
         bottomNavigationBar: BottomNavBar(

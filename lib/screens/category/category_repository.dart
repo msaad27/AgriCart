@@ -7,7 +7,7 @@ class CategoryRepository {
   final List<Category> _mockData = dummyCategories;
 
   Future<List<Category>> fetchCategories(int page) async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     final start = page * _pageSize;
     if (start >= _mockData.length) return [];
     final end = start + _pageSize;

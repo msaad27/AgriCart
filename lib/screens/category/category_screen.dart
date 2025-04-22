@@ -52,9 +52,7 @@ class CategoryScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {
-              
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -69,84 +67,91 @@ class CategoryScreen extends ConsumerWidget {
           return NotificationListener<ScrollNotification>(
             onNotification: (notification) {
               if (notification.metrics.pixels >=
-                  notification.metrics.maxScrollExtent - 200) {
+                  notification.metrics.maxScrollExtent - 200 &&
+                  notifier.hasMore) {
                 notifier.fetchCategories(loadMore: true);
               }
               return false;
             },
-            child: Stack(
-              children: [
-                
-                GridView.builder(
+            child: CustomScrollView(
+              slivers: [
+                SliverPadding(
                   padding: const EdgeInsets.all(16),
-                  itemCount:
-                      notifier.hasMore
-                          ? categories.length + 1
-                          : categories.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 15,
-                    crossAxisSpacing: 15,
-                    childAspectRatio: 1,
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final category = categories[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withAlpha(50),
+                                blurRadius: 5,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundColor: const Color(0xFFD4E5C3),
+                                child: Image.asset(
+                                  category.iconPath,
+                                  height: 30,
+                                  width: 30,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                category.title,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      childCount: categories.length,
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 15,
+                      crossAxisSpacing: 15,
+                      childAspectRatio: 1,
+                    ),
                   ),
-                  itemBuilder: (context, index) {
-                    if (index >= categories.length) {
-                      return const SizedBox.shrink(); 
-                    }
-
-                    final category = categories[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withAlpha(50),
-                            blurRadius: 5,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundColor: const Color(0xFFD4E5C3),
-                            child: Image.asset(
-                              category.iconPath,
-                              height: 30,
-                              width: 30,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            category.title,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
                 ),
-
-                if (notifier.hasMore)
-                  Positioned(
-                    bottom: 16,
-                    child: const Center(
+ 
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 32, bottom: 80),
+                    child: Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 10),
-                          Text(
-                            "Loading ...",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
+                          if (notifier.hasMore) ...[
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 10),
+                            const Text(
+                              "Loading ...",
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                            ),
+                          ] else ...[
+                            const Icon(Icons.check_circle_outline, color: Colors.grey),
+                            const SizedBox(height: 10),
+                            const Text(
+                              "No more data",
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           );
